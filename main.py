@@ -111,10 +111,10 @@ def initialize_database():
 def create_user_account(username, password, email):
     with get_db_connection() as connection:
         try:
-            hashed_password = generate_password_hash(password)
+            #hashed_password = generate_password_hash(password)
             cursor = connection.execute(
                 'INSERT INTO users (username, password, email) VALUES (?, ?, ?)',
-                (username, hashed_password, email),
+                (username, password, email),
             )
             return cursor.lastrowid
         except sqlite3.IntegrityError:
@@ -340,13 +340,13 @@ def set_finances(
 # Finances format: (hourly_income, hours_per_week, rent, groceries, utilities, 
 #                   transportation, entertainment, subscriptions, other)
 def generate_tests():
-    user1_pass = generate_password_hash('derg_pw_123')
-    user2_pass = generate_password_hash('wyrm_pw_123') 
-    user3_pass = generate_password_hash('dragonPass123')
+    #user1_pass = generate_password_hash('derg_pw_123')
+    #user2_pass = generate_password_hash('wyrm_pw_123') 
+    #user3_pass = generate_password_hash('dragonPass123')
     test_users = [
         {
             'username': 'test_dragon',
-            'password': user1_pass,
+            'password': 'derg_pw_123',
             'email': 'dragon@wyrms.com',
             'transactions': [
                 ('Paycheck', 1450.00),
@@ -363,7 +363,7 @@ def generate_tests():
         },
         {
             'username': 'test_wyrm',
-            'password': user2_pass,
+            'password': 'wyrm_pw_123',
             'email': 'wyrm@dragons.com',
             'transactions': [
                 ('Freelance Invoice', 820.00),
@@ -382,7 +382,7 @@ def generate_tests():
         },
         {
             'username': 'JustDragon',
-            'password': user3_pass,
+            'password': 'dragonPass123',
             'email': 'JDragon@example.com',
             'transactions': [
                 ('Scholarship Disbursement', 2100.00),
@@ -446,11 +446,11 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
-        hashed_password = generate_password_hash(password)
+        #hashed_password = generate_password_hash(password)
         with get_db_connection() as connection:
             user = connection.execute(
                 'SELECT * FROM users WHERE username = ? AND password = ?',
-                (username, hashed_password),
+                (username, password),
             ).fetchone()
         if user:
             session['username'] = username
