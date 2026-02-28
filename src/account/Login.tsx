@@ -1,6 +1,6 @@
 /* Based on tutorial from https://www.geeksforgeeks.org/reactjs/react-hook-form-create-basic-reactjs-registration-and-login-form/ */
 
-import { Paper, Box, Typography, Grid, TextField, Button } from "@mui/material"
+import { Paper, Box, Typography, Grid, TextField, Button, Container } from "@mui/material"
 import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router"
 import Header from "../statics/Header.tsx"
@@ -50,41 +50,44 @@ export default function Login() {
     return (
         <>
             <Header pageName={"Login"}/>
-            <Grid maxWidth={"45vw"}>
-                <Paper elevation={10} sx={{padding: 3}}>
-                    <Box 
-                        component={"form"}
-                        action={"/api/login"} 
-                        onSubmit={async (event) => {
-                            const success = await handleSubmit(event)
-                            if (success) {
-                                nav("/profile")
-                            }
-                        }}
-                        bgcolor={"lightgray"} 
-                        width={"45vw"} 
-                        height={"50vh"}>
-                            <TextField
-                                placeholder="Enter Username"
-                                label="Username"
-                                name="username"
-                                type="text"
-                                fullWidth
-                                required
-                                margin="normal" />
-                            <TextField
-                                placeholder="Enter Password"
-                                label="Password"
-                                name="password"
-                                type="password"
-                                fullWidth
-                                required
-                                margin="normal" />
-                            <Button type="submit" variant="contained" fullWidth>
-                                Sign In
-                            </Button>
-                    </Box>
-                </Paper>
+            <Grid container mt={8}>
+                <Container maxWidth="45vw">
+                    <Paper elevation={10} sx={{padding: 3}}>
+                        <Box 
+                            component={"form"}
+                            action={"/api/login"} 
+                            onSubmit={async (event) => {
+                                const success = await handleSubmit(event)
+                                if (success) {
+                                    nav("/profile")
+                                }
+                            }}
+                            bgcolor={"lightgray"} 
+                            width={"45vw"} 
+                            height={"50vh"}>
+                                <TextField
+                                    placeholder="Enter Username"
+                                    label="Username"
+                                    name="username"
+                                    type="text"
+                                    fullWidth
+                                    required
+                                    margin="normal" />
+                                <TextField
+                                    placeholder="Enter Password"
+                                    label="Password"
+                                    name="password"
+                                    type="password"
+                                    fullWidth
+                                    required
+                                    margin="normal" />
+                                <Button type="submit" variant="contained" fullWidth>
+                                    Sign In
+                                </Button>
+                        </Box>
+                    </Paper>
+                </Container>
+                
             </Grid>
         </>
     )
