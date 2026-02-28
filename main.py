@@ -421,7 +421,7 @@ def generate_tests():
 
 """
 ==========================================================
-Below are the flask pages and very simple test pages
+Below are the flask pages and very simple test pages (in templates folder, .gitignored)
 for making sure we can connect to the database, create users,
 display information.
 ==========================================================
@@ -434,7 +434,7 @@ def index():
     return redirect(url_for('login'))
 
 # Login page
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/api/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
@@ -452,7 +452,7 @@ def login():
     return render_template('login.html')
 
 # Registration page
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/api/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
@@ -471,7 +471,7 @@ def register():
 
 # Users dashboard page. If this is accessed without being logged in, 
 # it redirects to the login page.
-@app.route('/dashboard')
+@app.route('/api/dashboard')
 def dashboard():
     if 'username' not in session:
         return redirect(url_for('login'))
@@ -503,13 +503,15 @@ def dashboard():
 
 # Logout page. Removes the username from the session 
 # and redirects to the login page.
-@app.route('/logout')
+@app.route('/api/logout')
 def logout():
     session.pop('username', None)
     return redirect(url_for('login'))
 
 # Option to add a transaction. If the user is not logged in, it redirects to the login page.
-@app.route('/add_transaction', methods=['POST'])
+# flash messages are used to display success or error messages to the user after attempting 
+# to add a transaction.
+@app.route('/api/add_transaction', methods=['POST'])
 def route_add_transaction():
     if 'username' not in session:
         return redirect(url_for('login'))
@@ -527,7 +529,7 @@ def route_add_transaction():
     return redirect(url_for('dashboard'))
 
 # Option to delete a transaction
-@app.route('/delete_transaction', methods=['POST'])
+@app.route('/api/delete_transaction', methods=['POST'])
 def route_delete_transaction():
     if 'username' not in session:
         return redirect(url_for('login'))
@@ -545,7 +547,7 @@ def route_delete_transaction():
 
 
 # Update the users finances page
-@app.route('/update_finances', methods=['POST'])
+@app.route('/api/update_finances', methods=['POST'])
 def route_update_finances():
     if 'username' not in session:
         return redirect(url_for('login'))
@@ -570,7 +572,7 @@ def route_update_finances():
 
 
 # Update the users stocks records
-@app.route('/add_stock', methods=['POST'])
+@app.route('/api/add_stock', methods=['POST'])
 def route_add_stock():
     if 'username' not in session:
         return redirect(url_for('login'))
