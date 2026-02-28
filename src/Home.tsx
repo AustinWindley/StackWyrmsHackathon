@@ -1,9 +1,11 @@
-import { Box, Typography } from "@mui/material"
-
+import { Grid, Box, Typography } from "@mui/material"
+import Header from "./statics/Header.tsx"
 export default function Home() {
     return (
         <Box>
-            <Typography variant="h1">Hello World!</Typography>
+            <Header />
+            <Typography variant="h1">Project Name</Typography>
+
         </Box>
     )
 }
