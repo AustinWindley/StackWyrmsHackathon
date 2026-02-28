@@ -31,11 +31,11 @@ export default function Header(props) {
     const header = (
         <Paper elevation={5}>
             <Box 
-                maxWidth={"100vw"} 
+                width={"97.5vw"}
                 bgcolor={"darkgray"} 
                 ref={containerRef} 
                 sx={{zIndex: 2000}}
-                position={"static"}>
+                position={"fixed"}>
                 <Toolbar>
                     <Box display={"flex"}>
                         <IconButton onClick={handleNavMenu}>
@@ -58,7 +58,7 @@ export default function Header(props) {
     const pages = (
         <Slide in={navShown} container={containerRef.current} timeout={300}>
             <Paper elevation={5}>
-                <Box bgcolor={"lightgray"} sx={{maxHeight: "100vh", zIndex: 1500}} position={"static"}>
+                <Box bgcolor={"lightgray"} sx={{maxHeight: "100vh", zIndex: 1500}} position={"fixed"}>
                     <Tabs>
                         <Tab label="Stocks" onClick={() => nav("/stocks")} />
                     </Tabs>
@@ -71,9 +71,10 @@ export default function Header(props) {
     const profile = (
         <Slide in={profileShown} container={containerRef.current} timeout={300}>
             <Paper elevation={5}>
-                <Box bgcolor={"lightgray"} sx={{maxHeight: "100vh", zIndex: 1500}} position={"static"}>
+                <Box bgcolor={"lightgray"} sx={{maxHeight: "100vh", zIndex: 1500}} position={"fixed"}>
                     <Tabs>
                         <Tab label="Login" onClick={() => nav("/login")} />
+                        <Tab label="Register" onClick={() => nav("/register")} />
                         <Tab label="Logout" onClick={() => nav("/logout")} />
                     </Tabs>
                 </Box>
