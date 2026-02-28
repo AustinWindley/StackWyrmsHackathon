@@ -1,17 +1,14 @@
-/* Based on tutorial from https://www.geeksforgeeks.org/reactjs/react-hook-form-create-basic-reactjs-registration-and-login-form/ */
-
 import { Paper, Box, Typography, Grid, TextField, Button } from "@mui/material"
 import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router"
 import Header from "../statics/Header.tsx"
 
-
-export default function Login() {
-    const nav = useNavigate()
+export default function Register() {
+const nav = useNavigate()
 
     async function sendFormData(formData: FormData) {
         try {
-            const response = await fetch("/api/login", {
+            const response = await fetch("/api/register", {
                 method: "POST",
                 body: formData
             })
@@ -34,10 +31,10 @@ export default function Login() {
 
         try {
             const res = await sendFormData(formData)
-            if (res.status === 401) {
+            if (res.status === 409) {
                 const errorData = await res.json()
-                if (errorData.error === "Invalid username or password") {
-                    alert("Login failed: Invalid username or password")
+                if (errorData.error === "Account already exists") {
+                    alert("Login failed: Account already exists")
                     return false
                 }  
             }
@@ -49,16 +46,16 @@ export default function Login() {
     }
     return (
         <>
-            <Header pageName={"Login"}/>
-            <Grid maxWidth={"45vw"}>
-                <Paper elevation={10} sx={{padding: 3}}>
+            <Header pageName={"Register"}/>
+            <Grid maxWidth={"45vw"} justifyContent={"center"}>
+                <Paper elevation={5}>
                     <Box 
                         component={"form"}
-                        action={"/api/login"} 
+                        action={"/api/register"} 
                         onSubmit={async (event) => {
                             const success = await handleSubmit(event)
                             if (success) {
-                                nav("/profile")
+                                nav("/")
                             }
                         }}
                         bgcolor={"lightgray"} 
@@ -69,6 +66,14 @@ export default function Login() {
                                 label="Username"
                                 name="username"
                                 type="text"
+                                fullWidth
+                                required
+                                margin="normal" />
+                            <TextField
+                                placeholder="Enter Email"
+                                label="Email"
+                                name="email"
+                                type="email"
                                 fullWidth
                                 required
                                 margin="normal" />
