@@ -69,7 +69,6 @@ def getStockPrice(symbol):
 
 # Gives the infor back given a specific symbol, defaulted to None
 def getStockInfo(symbol):
-    """Return all info for a symbol as a dict, or None if not found."""
     with open(_CSV_PATH) as fileObject:
         reader = csv.reader(fileObject)
         next(reader)  # skip header
@@ -86,7 +85,6 @@ def getStockInfo(symbol):
 
 # Returns a imple list of all symbols in the CSV, useful for dropdowns and such
 def getAllSymbols():
-    """Return a list of all available stock symbols from the CSV."""
     symbols = []
     with open(_CSV_PATH) as fileObject:
         reader = csv.reader(fileObject)
