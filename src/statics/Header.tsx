@@ -32,22 +32,23 @@ export default function Header(props) {
         <Paper elevation={5}>
             <AppBar  
                 ref={containerRef} 
-                sx={{zIndex: 2000, width:"97.5vw", bgcolor: "darkgray"}}
+                sx={{zIndex: 2000, width:"100vw", bgcolor: "darkgray"}}
                 position={"fixed"}>
                 <Toolbar>
-                    <Box display={"flex"}>
+                    {/* <Box display={"flex"}>
                         <IconButton onClick={handleNavMenu}>
                             <MenuIcon />
                         </IconButton>
-                    </Box>
-                    <Box display={"flex"}>
-                        <Typography variant="h5" align="center">{pageName}</Typography>
-                    </Box>
+                    </Box> */}
                     <Box display={"flex"}>
                         <IconButton onClick={handleProfileMenu}>
                             <Avatar />
                         </IconButton>
                     </Box>
+                    <Box display={"flex"}>
+                        <Typography variant="h5" align="center" component="div" onClick={() => nav("/")}>{pageName}</Typography>
+                    </Box>
+
                 </Toolbar>
             </AppBar>
         </Paper>
@@ -69,7 +70,7 @@ export default function Header(props) {
     const profile = (
         <Slide in={profileShown} container={containerRef.current} timeout={300}>
             <Paper elevation={5}>
-                <Box bgcolor={"lightgray"} sx={{maxHeight: "100vh", zIndex: 1500}} position={"fixed"} width={"100vw"} mt={8}>
+                <Box bgcolor={"lightgray"} sx={{maxHeight: "100vh", zIndex: 1500}} position={"fixed"} width={"100vw"} ml={-1} >
                     <Tabs>
                         <Tab label="Login" onClick={() => nav("/login")} />
                         <Tab label="Register" onClick={() => nav("/register")} />

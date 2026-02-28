@@ -47,8 +47,8 @@ const nav = useNavigate()
     return (
         <>
             <Header pageName={"Register"}/>
-            <Grid maxWidth={"45vw"} justifyContent={"center"}>
-                <Paper elevation={5}>
+            <Grid container mt={8}>
+                <Paper elevation={10} sx={{padding: 3, marginTop: 8}}>
                     <Box 
                         component={"form"}
                         action={"/api/register"} 
@@ -58,8 +58,8 @@ const nav = useNavigate()
                                 nav("/")
                             }
                         }}
-                        bgcolor={"lightgray"} 
-                        width={"45vw"} 
+                        //bgcolor={"lightgray"} 
+                        //width={"45vw"} 
                         height={"50vh"}>
                             <TextField
                                 placeholder="Enter Username"
@@ -85,7 +85,7 @@ const nav = useNavigate()
                                 fullWidth
                                 required
                                 margin="normal" />
-                            <Button type="submit" variant="contained" fullWidth>
+                            <Button type="submit" variant="contained" fullWidth sx={{marginTop:5}}>
                                 Sign In
                             </Button>
                     </Box>

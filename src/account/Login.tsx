@@ -51,8 +51,8 @@ export default function Login() {
         <>
             <Header pageName={"Login"}/>
             <Grid container mt={8}>
-                <Container maxWidth="45vw">
-                    <Paper elevation={10} sx={{padding: 3}}>
+                <Container>
+                    <Paper elevation={10} sx={{padding: 3, marginTop: 8}}>
                         <Box 
                             component={"form"}
                             action={"/api/login"} 
@@ -61,10 +61,10 @@ export default function Login() {
                                 if (success) {
                                     nav("/profile")
                                 }
-                            }}
-                            bgcolor={"lightgray"} 
-                            width={"45vw"} 
-                            height={"50vh"}>
+                            }} 
+                            //width={"vw"} 
+                            height={"50vh"}
+                            >
                                 <TextField
                                     placeholder="Enter Username"
                                     label="Username"
@@ -81,7 +81,7 @@ export default function Login() {
                                     fullWidth
                                     required
                                     margin="normal" />
-                                <Button type="submit" variant="contained" fullWidth>
+                                <Button type="submit" variant="contained" fullWidth sx={{marginTop:5}}>
                                     Sign In
                                 </Button>
                         </Box>

@@ -31,20 +31,17 @@ export default function Profile() {
 
     //     ))
     // ]
-    finance_data.map((event) => (
-        console.log(event)
-    ))
+    // finance_data.map((event) => (
+    //     console.log(event)
+    // ))
 
     
     return (
         <>
             <Header pageName={"Profile"}/>
-            <Grid container>
+            <Grid container mt={8}>
                 <Box>
                     <Sidebar />
-                    <DataGrid columns={finance_data}>
-
-                    </DataGrid>
                 </Box>
             </Grid>
         </>
