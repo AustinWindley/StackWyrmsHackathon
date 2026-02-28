@@ -8,12 +8,14 @@ export default function Profile() {
     const [budgetData, setBudgetData] = useState([])
     const [pageState, setPageState] = useState("Budget")
     useEffect(() => {
-        fetch("/api/", {
+        fetch("/api/dashboard", {
             headers: {"Accept": "application/json"}
         }).then(
-            res => res.json()
+            res =>{ console.log(res); res.json()}
         ).then(
-            data => setData(data)
+            data => {setBudgetData(data);
+                console.log(data)
+            }
         )
     }, [])
     
