@@ -6,7 +6,9 @@ import MenuIcon from "@mui/icons-material/Menu"
 import { useNavigate } from "react-router"
 import { useState, useRef } from "react"
 
-export default function Header() {
+
+export default function Header(props) {
+    const pageName = props.pageName
     const [navShown, setNavShown] = useState(false)
     const [profileShown, setProfileShown] = useState(false)
     const containerRef = useRef<HTMLElement>(null)
@@ -41,7 +43,7 @@ export default function Header() {
                         </IconButton>
                     </Box>
                     <Box display={"flex"}>
-                        <Typography variant="h5" align="center">Temp Name</Typography>
+                        <Typography variant="h5" align="center">{pageName}</Typography>
                     </Box>
                     <Box display={"flex"}>
                         <IconButton onClick={handleProfileMenu}>
@@ -80,9 +82,7 @@ export default function Header() {
     )
 
     return (
-        <Grid
-
-            >
+        <Grid>
             <Grid>
                 {header}
             </Grid>
