@@ -359,9 +359,9 @@ export default function Profile() {
                                 <TableRow key={s.stock_symbol}>
                                     <TableCell>{s.stock_name}</TableCell>
                                     <TableCell>{s.stock_symbol}</TableCell>
-                                    <TableCell align="right">{s.current_price.toFixed(2)}</TableCell>
+                                    <TableCell align="right">{'$' + s.current_price.toFixed(2)}</TableCell>
                                     <TableCell align="right">{s.count}</TableCell>
-                                    <TableCell align="right">{(s.current_price * s.count).toFixed(2)}</TableCell>
+                                    <TableCell align="right">{'$' + (s.current_price * s.count).toFixed(2)}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
