@@ -1,8 +1,9 @@
-from flask import Flask
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 import os
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
 
 # Having issues finding accounts.db. Changed this to use os path library for documentation
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'accounts.db')
@@ -170,6 +171,55 @@ def get_recent_transactions(username, limit=1000):
             LIMIT ?
             ''',
             (username, safe_limit),
+        ).fetchall()
+    return [dict(row) for row in rows]
+
+# A function to return the users current finances in a list of floats.
+# returns them as a list of floats in the following order:
+# [rent, groceries, utilities, transportation, entertainment, subscriptions, other]
+def get_finances(username):
+    with get_db_connection() as connection:
+        row = connection.execute(
+            '''
+            SELECT rent, groceries, utilities, transportation, entertainment, subscriptions, other
+            FROM finances AS f
+            JOIN users AS u ON u.id = f.user_id
+            WHERE u.username = ?
+            ''',
+            (username,),
+        ).fetchone()
+    return list(row) if row else None
+
+
+# Returns all finance fields for a user as a dict (for form pre-fill).
+def get_finances_full(username):
+    with get_db_connection() as connection:
+        row = connection.execute(
+            '''
+            SELECT f.hourly_income, f.hours_per_week, f.rent, f.groceries,
+                   f.utilities, f.transportation, f.entertainment,
+                   f.subscriptions, f.other
+            FROM finances AS f
+            JOIN users AS u ON u.id = f.user_id
+            WHERE u.username = ?
+            ''',
+            (username,),
+        ).fetchone()
+    return dict(row) if row else None
+
+
+# Returns all stocks for a user as a list of dicts.
+def get_stocks(username):
+    with get_db_connection() as connection:
+        rows = connection.execute(
+            '''
+            SELECT s.stock_name, s.stock_symbol, s.current_price, s.count
+            FROM stocks AS s
+            JOIN users AS u ON u.id = s.user_id
+            WHERE u.username = ?
+            ORDER BY s.stock_symbol
+            ''',
+            (username,),
         ).fetchall()
     return [dict(row) for row in rows]
 
@@ -368,21 +418,178 @@ def generate_tests():
         'finances_created': len(test_users),
     }
 
-# Home page --> Welcome screen, description of our services, links to
-# login/signup, Current stock tickers, calculators, and homepage
+
+"""
+==========================================================
+Below are the flask pages and very simple test pages
+for making sure we can connect to the database, create users,
+display information.
+==========================================================
+"""
+# Home page
 @app.route('/')
-def hello_world():
-    return 'Hello, World!'
+def index():
+    if 'username' in session:
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('login'))
 
-# Login Page --> Prompt for user name and password, or to sign up
-# if they do not have an account. Keep general links at the top of the page.
+# Login page
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+        with get_db_connection() as connection:
+            user = connection.execute(
+                'SELECT * FROM users WHERE username = ? AND password = ?',
+                (username, password),
+            ).fetchone()
+        if user:
+            session['username'] = username
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Invalid username or password.')
+    return render_template('login.html')
 
-# Calculators page --> Various calculators - Delegated to sabian.
+# Registration page
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+        email = request.form.get('email', '').strip()
+        if not username or not password or not email:
+            flash('All fields are required.')
+        else:
+            result = create_user_account(username, password, email)
+            if result is None:
+                flash('Username or email already taken.')
+            else:
+                flash('Account created! Please log in.')
+                return redirect(url_for('login'))
+    return render_template('register.html')
 
-# Stock tickers page -- > Display current stock tickers, with links to more detailed information about
-# each stock. Delegated to John
+# Users dashboard page. If this is accessed without being logged in, 
+# it redirects to the login page.
+@app.route('/dashboard')
+def dashboard():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    username = session['username']
+    transactions = get_recent_transactions(username, limit=50)
+    stocks = get_stocks(username)
+    finances = get_finances(username)
+    finances_full = get_finances_full(username)
+
+    # Order: rent, groceries, utilities, transportation, 
+    #        entertainment, subscriptions, other
+    finance_labels = [
+        'Rent', 'Groceries', 'Utilities', 'Transportation',
+        'Entertainment', 'Subscriptions', 'Other',
+    ]
+    finance_data = None
+    if finances:
+        finance_data = list(zip(finance_labels, finances))
+
+    # This is where we pass all the data to the dashboard template to be rendered.
+    return render_template(
+        'dashboard.html',
+        username=username,
+        transactions=transactions,
+        stocks=stocks,
+        finance_data=finance_data,
+        finances_full=finances_full,
+    )
+
+# Logout page. Removes the username from the session 
+# and redirects to the login page.
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('login'))
+
+# Option to add a transaction. If the user is not logged in, it redirects to the login page.
+@app.route('/add_transaction', methods=['POST'])
+def route_add_transaction():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    username = session['username']
+    name = request.form.get('transaction_name', '').strip()
+    amount = request.form.get('amount', '').strip()
+    if not name or not amount:
+        flash('Transaction name and amount are required.')
+    else:
+        try:
+            add_transaction(username, name, float(amount))
+            flash(f'Transaction "{name}" added.')
+        except (ValueError, sqlite3.Error) as e:
+            flash(f'Error adding transaction: {e}')
+    return redirect(url_for('dashboard'))
+
+# Option to delete a transaction
+@app.route('/delete_transaction', methods=['POST'])
+def route_delete_transaction():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    username = session['username']
+    transaction_id = request.form.get('transaction_id', '').strip()
+    if not transaction_id:
+        flash('Transaction ID is required.')
+    else:
+        try:
+            delete_transaction(username, int(transaction_id))
+            flash('Transaction deleted.')
+        except (ValueError, sqlite3.Error) as e:
+            flash(f'Error deleting transaction: {e}')
+    return redirect(url_for('dashboard'))
+
+
+# Update the users finances page
+@app.route('/update_finances', methods=['POST'])
+def route_update_finances():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    username = session['username']
+    try:
+        set_finances(
+            username,
+            float(request.form.get('hourly_income', 0)),
+            float(request.form.get('hours_per_week', 0)),
+            float(request.form.get('rent', 0)),
+            float(request.form.get('groceries', 0)),
+            float(request.form.get('utilities', 0)),
+            float(request.form.get('transportation', 0)),
+            float(request.form.get('entertainment', 0)),
+            float(request.form.get('subscriptions', 0)),
+            float(request.form.get('other', 0)),
+        )
+        flash('Finances updated.')
+    except (ValueError, sqlite3.Error) as e:
+        flash(f'Error updating finances: {e}')
+    return redirect(url_for('dashboard'))
+
+
+# Update the users stocks records
+@app.route('/add_stock', methods=['POST'])
+def route_add_stock():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    username = session['username']
+    stock_name = request.form.get('stock_name', '').strip()
+    stock_symbol = request.form.get('stock_symbol', '').strip().upper()
+    current_price = request.form.get('current_price', '').strip()
+    count = request.form.get('count', '').strip()
+    if not stock_name or not stock_symbol or not current_price or not count:
+        flash('All stock fields are required.')
+    else:
+        try:
+            add_or_update_stock(username, stock_name, stock_symbol, float(current_price), int(count))
+            flash(f'Stock {stock_symbol} added/updated.')
+        except (ValueError, sqlite3.Error) as e:
+            flash(f'Error adding stock: {e}')
+    return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
     initialize_database()
     generate_tests()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=5000)
