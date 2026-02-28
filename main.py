@@ -1,4 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from werkzeug.security import generate_password_hash, check_password_hash
+import Calculator
+import stocks
 import sqlite3
 import os
 
@@ -110,8 +113,8 @@ def create_user_account(username, password, email):
         try:
             hashed_password = generate_password_hash(password)
             cursor = connection.execute(
-                'INSERT INTO users (username, hashed_password, email) VALUES (?, ?, ?)',
-                (username, password, email),
+                'INSERT INTO users (username, password, email) VALUES (?, ?, ?)',
+                (username, hashed_password, email),
             )
             return cursor.lastrowid
         except sqlite3.IntegrityError:
@@ -337,10 +340,13 @@ def set_finances(
 # Finances format: (hourly_income, hours_per_week, rent, groceries, utilities, 
 #                   transportation, entertainment, subscriptions, other)
 def generate_tests():
+    user1_pass = generate_password_hash('derg_pw_123')
+    user2_pass = generate_password_hash('wyrm_pw_123') 
+    user3_pass = generate_password_hash('dragonPass123')
     test_users = [
         {
             'username': 'test_dragon',
-            'password': 'derg_pw_123',
+            'password': user1_pass,
             'email': 'dragon@wyrms.com',
             'transactions': [
                 ('Paycheck', 1450.00),
@@ -357,7 +363,7 @@ def generate_tests():
         },
         {
             'username': 'test_wyrm',
-            'password': 'wyrm_pw_123',
+            'password': user2_pass,
             'email': 'wyrm@dragons.com',
             'transactions': [
                 ('Freelance Invoice', 820.00),
@@ -376,7 +382,7 @@ def generate_tests():
         },
         {
             'username': 'JustDragon',
-            'password': 'dragonPass123',
+            'password': user3_pass,
             'email': 'JDragon@example.com',
             'transactions': [
                 ('Scholarship Disbursement', 2100.00),
@@ -440,10 +446,11 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
+        hashed_password = generate_password_hash(password)
         with get_db_connection() as connection:
             user = connection.execute(
                 'SELECT * FROM users WHERE username = ? AND password = ?',
-                (username, password),
+                (username, hashed_password),
             ).fetchone()
         if user:
             session['username'] = username
@@ -565,24 +572,89 @@ def route_update_finances():
         return jsonify({'error': f'Error updating finances: {e}'}), 400
 
 
-# Update the users stocks records
+# Update the users stocks records.
+# Only stock_symbol and count are required — name and price are looked up
+# automatically from the stocks.py CSV data.
 @app.route('/api/add_stock', methods=['POST'])
 def route_add_stock():
     if 'username' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
     username = session['username']
-    stock_name = request.form.get('stock_name', '').strip()
     stock_symbol = request.form.get('stock_symbol', '').strip().upper()
-    current_price = request.form.get('current_price', '').strip()
     count = request.form.get('count', '').strip()
-    if not stock_name or not stock_symbol or not current_price or not count:
-        return jsonify({'error': 'All stock fields are required.'}), 400
-    else:
-        try:
-            add_or_update_stock(username, stock_name, stock_symbol, float(current_price), int(count))
-            return jsonify({'message': f'Stock {stock_symbol} added/updated.'}), 201
-        except (ValueError, sqlite3.Error) as e:
-            return jsonify({'error': f'Error adding stock: {e}'}), 400
+    if not stock_symbol or not count:
+        return jsonify({'error': 'Stock symbol and count are required.'}), 400
+    try:
+        info = stocks.getStockInfo(stock_symbol)
+        if info is None:
+            return jsonify({'error': f'Stock symbol {stock_symbol} not found in database.'}), 404
+        stock_name = info['name']
+        current_price = info['current_price'] or 0.0
+        add_or_update_stock(username, stock_name, stock_symbol, current_price, int(count))
+        return jsonify({
+            'message': f'Stock {stock_symbol} added/updated.',
+            'stock': {
+                'stock_name': stock_name,
+                'stock_symbol': stock_symbol,
+                'current_price': current_price,
+                'count': int(count),
+            },
+        }), 201
+    except (ValueError, sqlite3.Error) as e:
+        return jsonify({'error': f'Error adding stock: {e}'}), 400
+
+
+# Look up a stock by symbol — returns name, beta, price-to-book, and current price.
+@app.route('/api/lookup_stock', methods=['GET'])
+def route_lookup_stock():
+    symbol = request.args.get('symbol', '').strip().upper()
+    if not symbol:
+        return jsonify({'error': 'Symbol query parameter is required.'}), 400
+    info = stocks.getStockInfo(symbol)
+    if info is None:
+        return jsonify({'error': f'Stock symbol {symbol} not found.'}), 404
+    return jsonify(info), 200
+
+
+# Refresh current prices for every stock in the logged-in user's portfolio
+# using the data from stocks.py / stocks.csv.
+@app.route('/api/update_stock_prices', methods=['POST'])
+def route_update_stock_prices():
+    if 'username' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    username = session['username']
+    user_stocks = get_stocks(username)
+    if not user_stocks:
+        return jsonify({'message': 'No stocks in portfolio to update.'}), 200
+
+    updated = []
+    not_found = []
+    for s in user_stocks:
+        info = stocks.getStockInfo(s['stock_symbol'])
+        if info and info['current_price'] is not None:
+            try:
+                add_or_update_stock(
+                    username,
+                    info['name'],
+                    s['stock_symbol'],
+                    info['current_price'],
+                    s['count'],
+                )
+                updated.append({
+                    'stock_symbol': s['stock_symbol'],
+                    'old_price': s['current_price'],
+                    'new_price': info['current_price'],
+                })
+            except (ValueError, sqlite3.Error):
+                not_found.append(s['stock_symbol'])
+        else:
+            not_found.append(s['stock_symbol'])
+
+    return jsonify({
+        'message': f'{len(updated)} stock(s) updated.',
+        'updated': updated,
+        'not_found': not_found,
+    }), 200
 
 if __name__ == '__main__':
     initialize_database()
