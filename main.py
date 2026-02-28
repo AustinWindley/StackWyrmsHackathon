@@ -1,4 +1,5 @@
 from flask import Flask
+from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import os
 
@@ -107,8 +108,9 @@ def initialize_database():
 def create_user_account(username, password, email):
     with get_db_connection() as connection:
         try:
+            hashed_password = generate_password_hash(password)
             cursor = connection.execute(
-                'INSERT INTO users (username, password, email) VALUES (?, ?, ?)',
+                'INSERT INTO users (username, hashed_password, email) VALUES (?, ?, ?)',
                 (username, password, email),
             )
             return cursor.lastrowid
