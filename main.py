@@ -111,8 +111,8 @@ def create_user_account(username, password, email):
         try:
             hashed_password = generate_password_hash(password)
             cursor = connection.execute(
-                'INSERT INTO users (username, hashed_password, email) VALUES (?, ?, ?)',
-                (username, password, email),
+                'INSERT INTO users (username, password, email) VALUES (?, ?, ?)',
+                (username, hashed_password, email),
             )
             return cursor.lastrowid
         except sqlite3.IntegrityError:
@@ -338,10 +338,13 @@ def set_finances(
 # Finances format: (hourly_income, hours_per_week, rent, groceries, utilities, 
 #                   transportation, entertainment, subscriptions, other)
 def generate_tests():
+    user1_pass = generate_password_hash('derg_pw_123')
+    user2_pass = generate_password_hash('wyrm_pw_123') 
+    user3_pass = generate_password_hash('dragonPass123')
     test_users = [
         {
             'username': 'test_dragon',
-            'password': 'derg_pw_123',
+            'password': user1_pass,
             'email': 'dragon@wyrms.com',
             'transactions': [
                 ('Paycheck', 1450.00),
@@ -358,7 +361,7 @@ def generate_tests():
         },
         {
             'username': 'test_wyrm',
-            'password': 'wyrm_pw_123',
+            'password': user2_pass,
             'email': 'wyrm@dragons.com',
             'transactions': [
                 ('Freelance Invoice', 820.00),
@@ -377,7 +380,7 @@ def generate_tests():
         },
         {
             'username': 'JustDragon',
-            'password': 'dragonPass123',
+            'password': user3_pass,
             'email': 'JDragon@example.com',
             'transactions': [
                 ('Scholarship Disbursement', 2100.00),
