@@ -213,15 +213,13 @@ export default function Profile() {
                     <BarChart
                         xAxis={[{ scaleType: "band", data: ["Monthly"] }]}
                         series={[
-                            { data: [Math.round(monthlyIncome * 100) / 100], label: "Income", color: "#4caf50" },
+                            { data: [Math.round(monthlyIncome * 100) / 100], label: "Revenue", color: "#4caf50" },
                             { data: [Math.round(totalExpenses * 100) / 100], label: "Expenses", color: "#f44336" },
+                            { data: [Math.round((monthlyIncome - totalExpenses) * 100) / 100], label: "Net", color: "#2196f3" },
                         ]}
                         height={300}
                     />
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                        {monthlyIncome >= totalExpenses
-                            ? `Nice! You're saving about $${(monthlyIncome - totalExpenses).toFixed(2)}/mo`
-                            : `Heads up — you're spending $${(totalExpenses - monthlyIncome).toFixed(2)}/mo more than you earn`}
                     </Typography>
                 </Paper>
             )}
