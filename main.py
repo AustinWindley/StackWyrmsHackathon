@@ -4,6 +4,7 @@ import os
 
 app = Flask(__name__)
 
+# Having issues finding accounts.db. Changed this to use os path library for documentation
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'accounts.db')
 
 # Sets up the database connections
@@ -14,6 +15,40 @@ def get_db_connection():
     return connection
 
 # Create tables if they dont exist already (rare usage)
+#
+# The create_idx_transactions_user_date index is added to try to 
+# optimize finding transactions for a user sorted by date, 
+# which is a common thing we do
+"""
+Users
+    - id
+    - username
+    - password
+    - email
+    - creation timestamp
+Transactions
+    - id
+    - user_id
+    - transaction_name
+    - transaction_date
+    - amount
+Stocks
+    - id
+    - user_id
+    - stock_name
+    - stock_symbol
+    - current_price
+    - count
+Finances
+    - id
+    - user_id
+    - hourly_income
+    - hours_per_week
+    - rent
+    - groceries
+    - utilities
+    - transportation
+"""
 def initialize_database():
     with get_db_connection() as connection:
         connection.executescript(
@@ -138,6 +173,24 @@ def get_recent_transactions(username, limit=1000):
         ).fetchall()
     return [dict(row) for row in rows]
 
+
+# Deletes a specific transaction by its ID, but only if it belongs to the given user.
+# takes in the username of the connected user and the ID of the transaction.
+def delete_transaction(username, transaction_id):
+    with get_db_connection() as connection:
+        user_id = _get_user_id(connection, username)
+        if user_id is None:
+            raise ValueError('User not found')
+
+        cursor = connection.execute(
+            'DELETE FROM transactions WHERE id = ? AND user_id = ?',
+            (transaction_id, user_id),
+        )
+        if cursor.rowcount == 0:
+            raise ValueError('Transaction not found')
+        return True
+
+
 # A function to add a stock or change how many you have registered to your account.
 # get_db_connection() gets the connection object
 # _get_user_id() gets the user id from the connection object.
@@ -182,6 +235,10 @@ def set_finances(
             raise ValueError('User not found')
 
         # If the uiser already has finances set, update the existing entry instead of creating a new one.
+        # INSERT - into finances
+        # VALUES - the values to insert
+        # ON CONFLICT(user_id) - if there is a conflict on the user_id (i.e. the user already has finances set)
+        # DO UPDATE SET - update the existing entry with the new values
         cursor = connection.execute(
             '''
             INSERT INTO finances (
@@ -226,12 +283,14 @@ def set_finances(
 
 # Simple test case to ensure databases are working correctly.
 #  Creates 3 test users with a variety of transactions, stocks, and finances.
+# Finances format: (hourly_income, hours_per_week, rent, groceries, utilities, 
+#                   transportation, entertainment, subscriptions, other)
 def generate_tests():
     test_users = [
         {
             'username': 'test_dragon',
             'password': 'derg_pw_123',
-            'email': 'dratgon@wyrms.com',
+            'email': 'dragon@wyrms.com',
             'transactions': [
                 ('Paycheck', 1450.00),
                 ('Rent Payment', -900.00),
