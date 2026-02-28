@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
+=======
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+>>>>>>> b83f88c77f608710f756578a0b5d3a5e15696978
 import sqlite3
 import os
 
@@ -423,7 +427,7 @@ def generate_tests():
 
 """
 ==========================================================
-Below are the flask pages and very simple test pages
+Below are the flask pages and very simple test pages (in templates folder, .gitignored)
 for making sure we can connect to the database, create users,
 display information.
 ==========================================================
@@ -432,11 +436,11 @@ display information.
 @app.route('/')
 def index():
     if 'username' in session:
-        return redirect(url_for('dashboard'))
-    return redirect(url_for('login'))
+        return jsonify({'authenticated': True, 'redirect': '/api/dashboard'}), 200
+    return jsonify({'authenticated': False, 'redirect': '/api/login'}), 200
 
 # Login page
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/api/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
@@ -449,35 +453,34 @@ def login():
             ).fetchone()
         if user:
             session['username'] = username
-            return redirect(url_for('dashboard'))
+            return jsonify({'message': 'Login successful', 'username': username}), 200
         else:
-            flash('Invalid username or password.')
-    return render_template('login.html')
+            return jsonify({'error': 'Invalid username or password.'}), 401
+    return jsonify({'message': 'Login endpoint ready'}), 200
 
 # Registration page
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/api/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
         email = request.form.get('email', '').strip()
         if not username or not password or not email:
-            flash('All fields are required.')
+            return jsonify({'error': 'All fields are required.'}), 400
         else:
             result = create_user_account(username, password, email)
             if result is None:
-                flash('Username or email already taken.')
+                return jsonify({'error': 'Username or email already taken.'}), 409
             else:
-                flash('Account created! Please log in.')
-                return redirect(url_for('login'))
-    return render_template('register.html')
+                return jsonify({'message': 'Account created! Please log in.'}), 201
+    return jsonify({'message': 'Register endpoint ready'}), 200
 
 # Users dashboard page. If this is accessed without being logged in, 
-# it redirects to the login page.
-@app.route('/dashboard')
+# it returns an unauthorized error.
+@app.route('/api/dashboard')
 def dashboard():
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return jsonify({'error': 'Not authenticated'}), 401
     username = session['username']
     transactions = get_recent_transactions(username, limit=50)
     stocks = get_stocks(username)
@@ -492,66 +495,63 @@ def dashboard():
     ]
     finance_data = None
     if finances:
-        finance_data = list(zip(finance_labels, finances))
+        finance_data = [{'label': label, 'value': value} for label, value in zip(finance_labels, finances)]
 
-    # This is where we pass all the data to the dashboard template to be rendered.
-    return render_template(
-        'dashboard.html',
-        username=username,
-        transactions=transactions,
-        stocks=stocks,
-        finance_data=finance_data,
-        finances_full=finances_full,
-    )
+    return jsonify({
+        'username': username,
+        'transactions': transactions,
+        'stocks': stocks,
+        'finance_data': finance_data,
+        'finances_full': finances_full,
+    }), 200
 
-# Logout page. Removes the username from the session 
-# and redirects to the login page.
-@app.route('/logout')
+# Logout endpoint. Removes the username from the session.
+@app.route('/api/logout')
 def logout():
     session.pop('username', None)
-    return redirect(url_for('login'))
+    return jsonify({'message': 'Logged out successfully'}), 200
 
 # Option to add a transaction. If the user is not logged in, it redirects to the login page.
-@app.route('/add_transaction', methods=['POST'])
+# flash messages are used to display success or error messages to the user after attempting 
+# to add a transaction.
+@app.route('/api/add_transaction', methods=['POST'])
 def route_add_transaction():
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return jsonify({'error': 'Not authenticated'}), 401
     username = session['username']
     name = request.form.get('transaction_name', '').strip()
     amount = request.form.get('amount', '').strip()
     if not name or not amount:
-        flash('Transaction name and amount are required.')
+        return jsonify({'error': 'Transaction name and amount are required.'}), 400
     else:
         try:
-            add_transaction(username, name, float(amount))
-            flash(f'Transaction "{name}" added.')
+            transaction_id = add_transaction(username, name, float(amount))
+            return jsonify({'message': f'Transaction "{name}" added.', 'transaction_id': transaction_id}), 201
         except (ValueError, sqlite3.Error) as e:
-            flash(f'Error adding transaction: {e}')
-    return redirect(url_for('dashboard'))
+            return jsonify({'error': f'Error adding transaction: {e}'}), 400
 
 # Option to delete a transaction
-@app.route('/delete_transaction', methods=['POST'])
+@app.route('/api/delete_transaction', methods=['POST'])
 def route_delete_transaction():
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return jsonify({'error': 'Not authenticated'}), 401
     username = session['username']
     transaction_id = request.form.get('transaction_id', '').strip()
     if not transaction_id:
-        flash('Transaction ID is required.')
+        return jsonify({'error': 'Transaction ID is required.'}), 400
     else:
         try:
             delete_transaction(username, int(transaction_id))
-            flash('Transaction deleted.')
+            return jsonify({'message': 'Transaction deleted.'}), 200
         except (ValueError, sqlite3.Error) as e:
-            flash(f'Error deleting transaction: {e}')
-    return redirect(url_for('dashboard'))
+            return jsonify({'error': f'Error deleting transaction: {e}'}), 400
 
 
-# Update the users finances page
-@app.route('/update_finances', methods=['POST'])
+# Update the users finances
+@app.route('/api/update_finances', methods=['POST'])
 def route_update_finances():
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return jsonify({'error': 'Not authenticated'}), 401
     username = session['username']
     try:
         set_finances(
@@ -566,31 +566,29 @@ def route_update_finances():
             float(request.form.get('subscriptions', 0)),
             float(request.form.get('other', 0)),
         )
-        flash('Finances updated.')
+        return jsonify({'message': 'Finances updated.'}), 200
     except (ValueError, sqlite3.Error) as e:
-        flash(f'Error updating finances: {e}')
-    return redirect(url_for('dashboard'))
+        return jsonify({'error': f'Error updating finances: {e}'}), 400
 
 
 # Update the users stocks records
-@app.route('/add_stock', methods=['POST'])
+@app.route('/api/add_stock', methods=['POST'])
 def route_add_stock():
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return jsonify({'error': 'Not authenticated'}), 401
     username = session['username']
     stock_name = request.form.get('stock_name', '').strip()
     stock_symbol = request.form.get('stock_symbol', '').strip().upper()
     current_price = request.form.get('current_price', '').strip()
     count = request.form.get('count', '').strip()
     if not stock_name or not stock_symbol or not current_price or not count:
-        flash('All stock fields are required.')
+        return jsonify({'error': 'All stock fields are required.'}), 400
     else:
         try:
             add_or_update_stock(username, stock_name, stock_symbol, float(current_price), int(count))
-            flash(f'Stock {stock_symbol} added/updated.')
+            return jsonify({'message': f'Stock {stock_symbol} added/updated.'}), 201
         except (ValueError, sqlite3.Error) as e:
-            flash(f'Error adding stock: {e}')
-    return redirect(url_for('dashboard'))
+            return jsonify({'error': f'Error adding stock: {e}'}), 400
 
 if __name__ == '__main__':
     initialize_database()
