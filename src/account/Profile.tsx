@@ -5,19 +5,36 @@ import Sidebar from "../statics/Sidebar.tsx"
 import { Grid, Box } from "@mui/material"
 
 export default function Profile() {
-    const [budgetData, setBudgetData] = useState([])
+    const [data, setData] = useState([])
+
     const [pageState, setPageState] = useState("Budget")
     useEffect(() => {
         fetch("/api/dashboard", {
-            headers: {"Accept": "application/json"}
+            // headers: {"Accept": "application/json"}
         }).then(
-            res =>{ console.log(res); res.json()}
+            res => res.json()
         ).then(
-            data => {setBudgetData(data);
+            data => {setData(data);
                 console.log(data)
             }
         )
     }, [])
+
+    let finance_data = data["finances_full"]
+    let stocks = data["stocks"]
+    let transactions = data["transactions"]
+    // console.log(finance_data)
+    // console.log(stocks)
+    // console.log(transactions)
+    // const columns: GridColDef[] = [
+    //     finance_data.map((col) => (
+
+    //     ))
+    // ]
+    finance_data.map((event) => (
+        console.log(event)
+    ))
+
     
     return (
         <>
@@ -25,8 +42,10 @@ export default function Profile() {
             <Grid container>
                 <Box>
                     <Sidebar />
+                    <DataGrid columns={finance_data}>
+
+                    </DataGrid>
                 </Box>
-                
             </Grid>
         </>
     )

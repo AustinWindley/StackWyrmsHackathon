@@ -10,7 +10,7 @@ export default function Sidebar() {
             <Box 
                 mt={8}
                 bgcolor={"lightgray"} 
-                sx={{height: "100vh", zIndex: 1500}} 
+                sx={{height: "100vh", zIndex: 1000}} 
                 position={"fixed"} maxWidth={"30vw"} 
                 display={"flex"}
                 justifyContent={"start"}
