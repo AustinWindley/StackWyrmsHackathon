@@ -1,97 +1,77 @@
-import { Paper, Box, Typography, Grid, TextField, Button } from "@mui/material"
-import { useForm } from "react-hook-form"
+import { Paper, Box, Typography, TextField, Button, Container, Alert } from "@mui/material"
 import { useNavigate } from "react-router"
-import Header from "../statics/Header.tsx"
+import { useState } from "react"
+import Header from "../statics/Header"
 
 export default function Register() {
-const nav = useNavigate()
-
-    async function sendFormData(formData: FormData) {
-        try {
-            const response = await fetch("/api/register", {
-                method: "POST",
-                body: formData
-            })
-            try {
-                const data = await response.clone().json()
-                console.log(data)
-            } catch (e) {
-                console.warn("Failed to parse JSON response", e)
-            }
-            return response
-        } catch (error) {
-            return new Response(null, { status: 500, statusText: "Network error" })
-            }
-    }
+    const nav = useNavigate()
+    const [error, setError] = useState<string | null>(null)
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
-
+        setError(null)
         const formData = new FormData(event.currentTarget)
-
         try {
-            const res = await sendFormData(formData)
-            if (res.status === 409) {
-                const errorData = await res.json()
-                if (errorData.error === "Account already exists") {
-                    alert("Login failed: Account already exists")
-                    return false
-                }  
+            const res = await fetch("/api/register", {
+                method: "POST",
+                body: formData,
+            })
+            const data = await res.json()
+            if (res.ok) {
+                nav("/login")
+            } else {
+                setError(data.error || "Registration failed.")
             }
-            return res.ok
-        } catch (error) {
-            console.error("Error during login: ", error)
-            return false
+        } catch (err) {
+            setError("Network error. Please try again.")
         }
     }
+
     return (
         <>
-            <Header pageName={"Register"}/>
-            <Grid maxWidth={"45vw"} justifyContent={"center"}>
-                <Paper elevation={5}>
-                    <Box 
-                        component={"form"}
-                        action={"/api/register"} 
-                        onSubmit={async (event) => {
-                            const success = await handleSubmit(event)
-                            if (success) {
-                                nav("/")
-                            }
-                        }}
-                        bgcolor={"lightgray"} 
-                        width={"45vw"} 
-                        height={"50vh"}>
-                            <TextField
-                                placeholder="Enter Username"
-                                label="Username"
-                                name="username"
-                                type="text"
-                                fullWidth
-                                required
-                                margin="normal" />
-                            <TextField
-                                placeholder="Enter Email"
-                                label="Email"
-                                name="email"
-                                type="email"
-                                fullWidth
-                                required
-                                margin="normal" />
-                            <TextField
-                                placeholder="Enter Password"
-                                label="Password"
-                                name="password"
-                                type="password"
-                                fullWidth
-                                required
-                                margin="normal" />
-                            <Button type="submit" variant="contained" fullWidth>
-                                Sign In
-                            </Button>
+            <Header pageName="Register" />
+            <Container maxWidth="sm" sx={{ mt: 12 }}>
+                <Paper elevation={6} sx={{ p: 4 }}>
+                    <Typography variant="h4" gutterBottom align="center">Create Account</Typography>
+                    {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+                    <Box component="form" onSubmit={handleSubmit}>
+                        <TextField
+                            placeholder="Enter Username"
+                            label="Username"
+                            name="username"
+                            type="text"
+                            fullWidth
+                            required
+                            margin="normal"
+                        />
+                        <TextField
+                            placeholder="Enter Email"
+                            label="Email"
+                            name="email"
+                            type="email"
+                            fullWidth
+                            required
+                            margin="normal"
+                        />
+                        <TextField
+                            placeholder="Enter Password"
+                            label="Password"
+                            name="password"
+                            type="password"
+                            fullWidth
+                            required
+                            margin="normal"
+                        />
+                        <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
+                            Register
+                        </Button>
                     </Box>
+                    <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+                        Already have an account?{" "}
+                        <Button size="small" onClick={() => nav("/login")}>Sign In</Button>
+                    </Typography>
                 </Paper>
-            </Grid>
+            </Container>
         </>
     )
-
 }

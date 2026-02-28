@@ -1,79 +1,96 @@
-import { Grid, AppBar, Box, Typography, Button, Avatar, Toolbar, IconButton, Paper } from "@mui/material"
+import { AppBar, Box, Typography, Avatar, Toolbar, IconButton, Paper, Tabs, Tab } from "@mui/material"
 import Slide from "@mui/material/Slide"
-import Tabs from "@mui/material/Tabs"
-import Tab from "@mui/material/Tab"
 import MenuIcon from "@mui/icons-material/Menu"
 import { useNavigate } from "react-router"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 
+interface HeaderProps {
+    pageName?: string
+}
 
-export default function Header(props) {
-    const pageName = props.pageName
+export default function Header({ pageName = "Hatchling" }: HeaderProps) {
     const [navShown, setNavShown] = useState(false)
     const [profileShown, setProfileShown] = useState(false)
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
     const containerRef = useRef<HTMLElement>(null)
     const nav = useNavigate()
 
+    useEffect(() => {
+        fetch("/api/dashboard")
+            .then(res => {
+                setIsLoggedIn(res.ok)
+            })
+            .catch(() => setIsLoggedIn(false))
+    }, [])
+
     const handleNavMenu = () => {
-        if (profileShown) {
-            setProfileShown(false)
-        }
+        if (profileShown) setProfileShown(false)
         setNavShown(!navShown)
     }
 
     const handleProfileMenu = () => {
-        if (navShown) {
-            setNavShown(false)
-        }
+        if (navShown) setNavShown(false)
         setProfileShown(!profileShown)
     }
 
+    const handleLogout = async () => {
+        await fetch("/api/logout")
+        setIsLoggedIn(false)
+        nav("/login")
+    }
+
     const header = (
-        <Paper elevation={5}>
-            <AppBar  
-                ref={containerRef} 
-                sx={{zIndex: 2000, width:"97.5vw", bgcolor: "darkgray"}}
-                position={"fixed"}>
-                <Toolbar>
-                    <Box display={"flex"}>
-                        <IconButton onClick={handleNavMenu}>
-                            <MenuIcon />
-                        </IconButton>
-                    </Box>
-                    <Box display={"flex"}>
-                        <Typography variant="h5" align="center">{pageName}</Typography>
-                    </Box>
-                    <Box display={"flex"}>
-                        <IconButton onClick={handleProfileMenu}>
-                            <Avatar />
-                        </IconButton>
-                    </Box>
-                </Toolbar>
-            </AppBar>
-        </Paper>
+        <AppBar
+            ref={containerRef}
+            sx={{ zIndex: 2000, bgcolor: "#2e3b4e" }}
+            position="fixed">
+            <Toolbar sx={{ justifyContent: "space-between" }}>
+                <Box display="flex" alignItems="center">
+                    <IconButton onClick={handleNavMenu} sx={{ color: "white" }}>
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography
+                        variant="h6"
+                        sx={{ ml: 1, cursor: "pointer" }}
+                        onClick={() => nav("/")}
+                    >
+                        Hatchling
+                    </Typography>
+                </Box>
+                <Typography variant="h6">{pageName}</Typography>
+                <Box display="flex" alignItems="center">
+                    <IconButton onClick={handleProfileMenu}>
+                        <Avatar sx={{ bgcolor: isLoggedIn ? "#4caf50" : "grey" }} />
+                    </IconButton>
+                </Box>
+            </Toolbar>
+        </AppBar>
     )
 
     const pages = (
         <Slide in={navShown} container={containerRef.current} timeout={300}>
             <Paper elevation={5}>
-                <Box bgcolor={"lightgray"} sx={{maxHeight: "100vh", zIndex: 1500}} position={"fixed"} width={"100vw"} mt={8}>
+                <Box bgcolor="#f5f5f5" sx={{ zIndex: 1500 }} position="fixed" width="100vw" mt={8}>
                     <Tabs>
-                        <Tab label="Stocks" onClick={() => nav("/stocks")} />
+                        <Tab label="Home" onClick={() => { setNavShown(false); nav("/") }} />
+                        <Tab label="Stocks" onClick={() => { setNavShown(false); nav("/stocks") }} />
+                        <Tab label="Graphs" onClick={() => { setNavShown(false); nav("/graphs") }} />
+                        {isLoggedIn && <Tab label="Profile" onClick={() => { setNavShown(false); nav("/profile") }} />}
                     </Tabs>
                 </Box>
             </Paper>
-            
         </Slide>
     )
 
     const profile = (
         <Slide in={profileShown} container={containerRef.current} timeout={300}>
             <Paper elevation={5}>
-                <Box bgcolor={"lightgray"} sx={{maxHeight: "100vh", zIndex: 1500}} position={"fixed"} width={"100vw"} mt={8}>
+                <Box bgcolor="#f5f5f5" sx={{ zIndex: 1500 }} position="fixed" width="100vw" mt={8}>
                     <Tabs>
-                        <Tab label="Login" onClick={() => nav("/login")} />
-                        <Tab label="Register" onClick={() => nav("/register")} />
-                        <Tab label="Logout" onClick={() => nav("/logout")} />
+                        {!isLoggedIn && <Tab label="Login" onClick={() => { setProfileShown(false); nav("/login") }} />}
+                        {!isLoggedIn && <Tab label="Register" onClick={() => { setProfileShown(false); nav("/register") }} />}
+                        {isLoggedIn && <Tab label="Profile" onClick={() => { setProfileShown(false); nav("/profile") }} />}
+                        {isLoggedIn && <Tab label="Logout" onClick={() => { setProfileShown(false); handleLogout() }} />}
                     </Tabs>
                 </Box>
             </Paper>
@@ -81,16 +98,10 @@ export default function Header(props) {
     )
 
     return (
-        <Grid>
-            <Grid>
-                {header}
-            </Grid>
-            <Grid>
-                {pages}
-            </Grid>
-            <Grid>
-                {profile}
-            </Grid>
-        </Grid>
+        <Box>
+            {header}
+            {pages}
+            {profile}
+        </Box>
     )
 }

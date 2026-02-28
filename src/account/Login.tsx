@@ -1,95 +1,68 @@
-/* Based on tutorial from https://www.geeksforgeeks.org/reactjs/react-hook-form-create-basic-reactjs-registration-and-login-form/ */
-
-import { Paper, Box, Typography, Grid, TextField, Button, Container } from "@mui/material"
-import { useForm } from "react-hook-form"
+import { Paper, Box, Typography, TextField, Button, Container, Alert } from "@mui/material"
 import { useNavigate } from "react-router"
-import Header from "../statics/Header.tsx"
-
+import { useState } from "react"
+import Header from "../statics/Header"
 
 export default function Login() {
     const nav = useNavigate()
-
-    async function sendFormData(formData: FormData) {
-        try {
-            const response = await fetch("/api/login", {
-                method: "POST",
-                body: formData
-            })
-            try {
-                const data = await response.clone().json()
-                console.log(data)
-            } catch (e) {
-                console.warn("Failed to parse JSON response", e)
-            }
-            return response
-        } catch (error) {
-            return new Response(null, { status: 500, statusText: "Network error" })
-            }
-    }
+    const [error, setError] = useState<string | null>(null)
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
-
+        setError(null)
         const formData = new FormData(event.currentTarget)
-
         try {
-            const res = await sendFormData(formData)
-            if (res.status === 401) {
-                const errorData = await res.json()
-                if (errorData.error === "Invalid username or password") {
-                    alert("Login failed: Invalid username or password")
-                    return false
-                }  
+            const res = await fetch("/api/login", {
+                method: "POST",
+                body: formData,
+            })
+            const data = await res.json()
+            if (res.ok) {
+                nav("/profile")
+            } else {
+                setError(data.error || "Login failed.")
             }
-            return res.ok
-        } catch (error) {
-            console.error("Error during login: ", error)
-            return false
+        } catch (err) {
+            setError("Network error. Please try again.")
         }
     }
+
     return (
         <>
-            <Header pageName={"Login"}/>
-            <Grid container mt={8}>
-                <Container maxWidth="45vw">
-                    <Paper elevation={10} sx={{padding: 3}}>
-                        <Box 
-                            component={"form"}
-                            action={"/api/login"} 
-                            onSubmit={async (event) => {
-                                const success = await handleSubmit(event)
-                                if (success) {
-                                    nav("/profile")
-                                }
-                            }}
-                            bgcolor={"lightgray"} 
-                            width={"45vw"} 
-                            height={"50vh"}>
-                                <TextField
-                                    placeholder="Enter Username"
-                                    label="Username"
-                                    name="username"
-                                    type="text"
-                                    fullWidth
-                                    required
-                                    margin="normal" />
-                                <TextField
-                                    placeholder="Enter Password"
-                                    label="Password"
-                                    name="password"
-                                    type="password"
-                                    fullWidth
-                                    required
-                                    margin="normal" />
-                                <Button type="submit" variant="contained" fullWidth>
-                                    Sign In
-                                </Button>
-                        </Box>
-                    </Paper>
-                </Container>
-                
-            </Grid>
+            <Header pageName="Login" />
+            <Container maxWidth="sm" sx={{ mt: 12 }}>
+                <Paper elevation={6} sx={{ p: 4 }}>
+                    <Typography variant="h4" gutterBottom align="center">Sign In</Typography>
+                    {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+                    <Box component="form" onSubmit={handleSubmit}>
+                        <TextField
+                            placeholder="Enter Username"
+                            label="Username"
+                            name="username"
+                            type="text"
+                            fullWidth
+                            required
+                            margin="normal"
+                        />
+                        <TextField
+                            placeholder="Enter Password"
+                            label="Password"
+                            name="password"
+                            type="password"
+                            fullWidth
+                            required
+                            margin="normal"
+                        />
+                        <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
+                            Sign In
+                        </Button>
+                    </Box>
+                    <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+                        Don't have an account?{" "}
+                        <Button size="small" onClick={() => nav("/register")}>Register</Button>
+                    </Typography>
+                </Paper>
+            </Container>
         </>
     )
-
 }
