@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
+from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import os
 
@@ -440,10 +441,11 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
+        hashed_password = generate_password_hash(password)
         with get_db_connection() as connection:
             user = connection.execute(
                 'SELECT * FROM users WHERE username = ? AND password = ?',
-                (username, password),
+                (username, hashed_password),
             ).fetchone()
         if user:
             session['username'] = username
