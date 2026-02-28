@@ -1,0 +1,99 @@
+Symbol,Name,Beta,PriceToBook,CurrentPrice
+ED,"Consolidated Edison, Inc.",0.388,1.6797539,112.52
+DG,Dollar General Corporation,0.255,4.2011294,156.24
+GIS,"General Mills, Inc.",-0.063,2.5904927,45.23
+CHD,"Church & Dwight Company, Inc.",0.468,6.197766,104.86
+CPB,The Campbell's Company,-0.036,2.0295203,26.95
+UNH,UnitedHealth Group Incorporated,0.415,2.6663575,293.27
+PM,Philip Morris International Inc,0.409,-29.101246,186.83
+CMS,CMS Energy Corporation,0.481,2.6818042,78.07
+SO,Southern Company (The),0.447,3.026197,97.38
+KHC,The Kraft Heinz Company,0.047,0.69936633,24.61
+WEC,"WEC Energy Group, Inc.",0.583,2.7961464,116.96
+ABC,,,,
+KMB,Kimberly-Clark Corporation,0.277,24.627625,111.44
+DGX,Quest Diagnostics Incorporated,0.675,3.251051,211.91
+PG,Procter & Gamble Company (The),0.38,7.4334235,167.2
+MKTX,"MarketAxess Holdings, Inc.",0.96,5.995691,192.0
+LMT,Lockheed Martin Corporation,0.23,22.42257,658.08
+PNW,Pinnacle West Capital Corporati,0.545,1.674793,100.3
+WM,"Waste Management, Inc.",0.586,9.714032,240.84
+LNT,Alliant Energy Corporation,0.67,2.5362878,72.34
+CNP,"CenterPoint Energy, Inc (Holdin",0.593,2.546391,43.5
+CNC,Centene Corporation,0.488,1.1060998,44.88
+HOLX,"Hologic, Inc.",0.733,3.2048993,75.36
+ATO,Atmos Energy Corporation,0.758,2.163524,186.79
+CF,"CF Industries Holdings, Inc.",0.689,3.159298,99.54
+MKC,"McCormick & Company, Incorporat",0.613,3.3238199,71.04
+ABBV,AbbVie Inc.,0.334,-125.44865,232.08
+BMY,Bristol-Myers Squibb Company,0.295,6.8742423,62.37
+TSN,"Tyson Foods, Inc.",0.465,1.269584,64.99
+CCI,Crown Castle Inc.,0.984,-23.820166,89.54
+ATVI,,,,
+O,Realty Income Corporation,0.801,1.5866625,67.0
+PGR,Progressive Corporation (The),0.318,4.129733,213.66
+TIF,,,,
+GILD,"Gilead Sciences, Inc.",0.387,8.142459,148.95
+WLTW,,,,
+AON,Aon plc,0.814,7.6944427,335.47
+NI,NiSource Inc,0.651,2.394694,47.3
+MMC,"Marsh & McLennan Companies, Inc",0.752,5.9080324,182.7
+NEE,"NextEra Energy, Inc.",0.761,3.5768232,93.77
+EIX,Edison International,0.829,1.6835986,74.74
+TMUS,"T-Mobile US, Inc.",0.435,4.058971,217.09
+TRV,"The Travelers Companies, Inc.",0.517,2.0407705,308.64
+AJG,Arthur J. Gallagher & Co.,0.658,2.5147946,228.2
+ALL,Allstate Corporation (The),0.235,1.9495615,214.52
+YUM,"Yum! Brands, Inc.",0.657,-6.3590984,168.16
+HCA,"HCA Healthcare, Inc.",1.365,-19.739883,529.7
+BRK.B,,,,
+WELL,Welltower Inc.,0.832,3.4242067,207.12
+HIG,"The Hartford Insurance Group, I",0.603,2.0916693,140.83
+TJX,"TJX Companies, Inc. (The)",0.738,17.847208,161.66
+LLY,Eli Lilly and Company,0.394,35.474285,1051.99
+UNM,Unum Group,0.177,1.068906,71.73
+COST,Costco Wholesale Corporation,1.008,14.807506,1010.79
+WMB,"Williams Companies, Inc. (The)",0.665,7.1488714,74.72
+EA,Electronic Arts Inc.,0.745,8.155573,200.57
+STE,STERIS plc (Ireland),1.044,3.46012,252.35
+FOXA,Fox Corporation,0.511,2.192474,56.34
+LIN,Linde plc,0.847,6.1599636,508.08
+COG,,,,
+GL,Globe Life Inc.,0.464,2.0505364,145.26
+LHX,"L3Harris Technologies, Inc.",0.64,3.4689023,364.54
+GD,General Dynamics Corporation,0.398,3.762302,357.05
+JNPR,,,,
+REG,Regency Centers Corporation,0.942,2.1565845,79.0
+NVR,"NVR, Inc.",1.035,5.445255,7517.79
+MDT,Medtronic plc.,0.718,2.5586212,97.66
+INCY,Incyte Corporation,0.847,3.8893154,101.27
+SRE,DBA Sempra,0.752,1.9902833,96.27
+LKQ,LKQ Corporation,0.888,1.2915936,33.11
+BLL,,,,
+DVN,Devon Energy Corporation,0.625,1.743641,43.53
+COP,ConocoPhillips,0.291,2.1555998,113.46
+AKAM,"Akamai Technologies, Inc.",0.723,2.8605902,98.39
+AIZ,"Assurant, Inc.",0.575,1.946998,229.59
+TSCO,Tractor Supply Company,0.726,10.583912,51.84
+EBAY,eBay Inc.,1.38,8.840241,90.86
+ULTA,"Ulta Beauty, Inc.",0.832,11.574045,684.79
+ZBH,"Zimmer Biomet Holdings, Inc.",0.608,1.5156275,98.44
+PKG,Packaging Corporation of Americ,0.898,4.362632,232.14
+BIIB,Biogen Inc.,0.164,1.5423955,191.82
+CHRW,"C.H. Robinson Worldwide, Inc.",0.896,11.887193,185.25
+UDR,"UDR, Inc.",0.707,3.7932432,37.5
+REGN,"Regeneron Pharmaceuticals, Inc.",0.413,2.5658135,781.67
+ECL,Ecolab Inc.,0.992,13.14477,308.35
+FANG,"Diamondback Energy, Inc.",0.584,1.3399943,174.08
+BR,"Broadridge Financial Solutions,",0.979,7.533641,185.87
+ZTS,Zoetis Inc.,0.961,16.724072,131.1
+IFF,International Flavors & Fragran,1.042,1.4845372,82.23
+EXPD,Expeditors International of Was,1.128,8.242682,145.03
+UHS,"Universal Health Services, Inc.",1.269,1.7297524,206.1
+OMC,Omnicom Group Inc.,0.744,2.2168794,85.29
+TGT,Target Corporation,1.136,3.3238885,113.79
+FRT,Federal Realty Investment Trust,1.018,3.0376742,108.77
+FAST,Fastenal Company,0.885,13.403203,46.04
+NDAQ,"Nasdaq, Inc.",1.024,4.082032,87.58
+OKE,"ONEOK, Inc.",0.918,2.3180327,82.77
+UNP,Union Pacific Corporation,0.987,8.5123205,264.98
