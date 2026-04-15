@@ -3,9 +3,9 @@ import Header from "./statics/Header"
 
 export default function Home() {
     return (
-        <Box>
+        <>
             <Header pageName="Home" />
-            <Container maxWidth="md" sx={{ mt: 12, textAlign: "center" }}>
+            <Container maxWidth="md" sx={{ pt: 12, textAlign: "center" }}>
                 <Typography variant="h2" gutterBottom>Hatchling</Typography>
                 <Typography variant="h5" color="text.secondary" gutterBottom>
                     By FinTech
@@ -17,6 +17,6 @@ export default function Home() {
                     Sign up today to start your financial journey with Hatchling!
                 </Typography>
             </Container>
-        </Box>
+        </>
     )
 }

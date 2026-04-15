@@ -24,13 +24,21 @@ export default function Header({ pageName = "Hatchling" }: HeaderProps) {
     }, [])
 
     const handleNavMenu = () => {
-        if (profileShown) setProfileShown(false)
-        setNavShown(!navShown)
+        // if (profileShown) setProfileShown(false)
+        // setNavShown(!navShown)
+        if (profileShown === true) {
+            setProfileShown((prev) => !prev)
+        }
+        setNavShown((prev) => !prev)
     }
 
     const handleProfileMenu = () => {
-        if (navShown) setNavShown(false)
-        setProfileShown(!profileShown)
+        // if (navShown) setNavShown(false)
+        // setProfileShown(!profileShown)
+        if (navShown === true) {
+            setNavShown((prev) => !prev)
+        }
+        setProfileShown((prev) => !prev)
     }
 
     const handleLogout = async () => {
@@ -41,9 +49,10 @@ export default function Header({ pageName = "Hatchling" }: HeaderProps) {
 
     const header = (
         <AppBar
-            ref={containerRef}
-            sx={{ zIndex: 2000, bgcolor: "#2e3b4e" }}
-            position="fixed">
+            // ref={containerRef}
+            sx={{ zIndex: 2000, bgcolor: "#2e3b4e"}}
+            position="fixed"
+        >
             <Toolbar sx={{ justifyContent: "space-between" }}>
                 <Box display="flex" alignItems="center">
                     <IconButton onClick={handleNavMenu} sx={{ color: "white" }}>
@@ -68,9 +77,9 @@ export default function Header({ pageName = "Hatchling" }: HeaderProps) {
     )
 
     const pages = (
-        <Slide in={navShown} container={containerRef.current} timeout={300}>
+        // <Slide in={navShown}  timeout={300}>
             <Paper elevation={5}>
-                <Box bgcolor="#f5f5f5" sx={{ zIndex: 1500 }} position="fixed" width="100vw" mt={8}>
+                <Box bgcolor="#f5f5f5" sx={{ zIndex: 1500, ml: -1 }} position="fixed" width="100vw" mt={7.2}>
                     <Tabs>
                         <Tab label="Home" onClick={() => { setNavShown(false); nav("/") }} />
                         <Tab label="Stocks" onClick={() => { setNavShown(false); nav("/stocks") }} />
@@ -79,13 +88,13 @@ export default function Header({ pageName = "Hatchling" }: HeaderProps) {
                     </Tabs>
                 </Box>
             </Paper>
-        </Slide>
+        // </Slide>
     )
 
     const profile = (
-        <Slide in={profileShown} container={containerRef.current} timeout={300}>
+        // <Slide in={profileShown} container={containerRef.current} timeout={300}>
             <Paper elevation={5}>
-                <Box bgcolor="#f5f5f5" sx={{ zIndex: 1500 }} position="fixed" width="100vw" mt={8}>
+                <Box bgcolor="#f5f5f5" sx={{ zIndex: 1500, ml: -1, pl: 1 }} position="fixed" width="100vw" mt={7.2}>
                     <Tabs>
                         {!isLoggedIn && <Tab label="Login" onClick={() => { setProfileShown(false); nav("/login") }} />}
                         {!isLoggedIn && <Tab label="Register" onClick={() => { setProfileShown(false); nav("/register") }} />}
@@ -93,15 +102,15 @@ export default function Header({ pageName = "Hatchling" }: HeaderProps) {
                         {isLoggedIn && <Tab label="Logout" onClick={() => { setProfileShown(false); handleLogout() }} />}
                     </Tabs>
                 </Box>
-            </Paper>
-        </Slide>
+            </Paper> 
+        // </Slide>
     )
 
     return (
-        <Box>
+        <Box sx={{zIndex: 2000}} position={"fixed"}>
             {header}
-            {pages}
-            {profile}
+            <Slide in={navShown} timeout={300}>{pages}</Slide>
+            <Slide in={profileShown} timeout={300}>{profile}</Slide>
         </Box>
     )
 }
