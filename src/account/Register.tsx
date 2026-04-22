@@ -12,13 +12,13 @@ export default function Register() {
         setError(null)
         const formData = new FormData(event.currentTarget)
         try {
-            const res = await fetch("/api/register", {
+            const res = await fetch("/Hackathon/api/register", {
                 method: "POST",
                 body: formData,
             })
             const data = await res.json()
             if (res.ok) {
-                nav("/login")
+                nav("/Hackathon/login")
             } else {
                 setError(data.error || "Registration failed.")
             }
@@ -68,7 +68,7 @@ export default function Register() {
                     </Box>
                     <Typography variant="body2" align="center" sx={{ mt: 2 }}>
                         Already have an account?{" "}
-                        <Button size="small" onClick={() => nav("/login")}>Sign In</Button>
+                        <Button size="small" onClick={() => nav("/Hackathon/login")}>Sign In</Button>
                     </Typography>
                 </Paper>
             </Container>

@@ -12,13 +12,13 @@ export default function Login() {
         setError(null)
         const formData = new FormData(event.currentTarget)
         try {
-            const res = await fetch("/api/login", {
+            const res = await fetch("/Hackathon/api/login", {
                 method: "POST",
                 body: formData,
             })
             const data = await res.json()
             if (res.ok) {
-                nav("/profile")
+                nav("/Hackathon/profile")
             } else {
                 setError(data.error || "Login failed.")
             }
@@ -59,7 +59,7 @@ export default function Login() {
                     </Box>
                     <Typography variant="body2" align="center" sx={{ mt: 2 }}>
                         Don't have an account?{" "}
-                        <Button size="small" onClick={() => nav("/register")}>Register</Button>
+                        <Button size="small" onClick={() => nav("/Hackathon/register")}>Register</Button>
                     </Typography>
                 </Paper>
             </Container>

@@ -9,14 +9,14 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/stocks" element={<Stocks />} />
-        <Route path="/graphs" element={<Graphs />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/logout" element={<Navigate to="/login" replace />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/Hackathon/" element={<Home />} />
+        <Route path="/Hackathon/stocks" element={<Stocks />} />
+        <Route path="/Hackathon/graphs" element={<Graphs />} />
+        <Route path="/Hackathon/login" element={<Login />} />
+        <Route path="/Hackathon/register" element={<Register />} />
+        <Route path="/Hackathon/profile" element={<Profile />} />
+        <Route path="/Hackathon/logout" element={<Navigate to="/login" replace />} />
+        {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
       </Routes>
     </BrowserRouter>
   )

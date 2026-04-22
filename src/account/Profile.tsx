@@ -72,11 +72,11 @@ export default function Profile() {
     // grabs everything from the backend — transactions, stocks, finances, the works
     const fetchDashboard = () => {
         setLoading(true)
-        fetch("/api/dashboard")
+        fetch("/Hackathon/api/dashboard")
             .then(res => {
                 // not logged in? bounce to login
                 if (res.status === 401) {
-                    nav("/login")
+                    nav("/Hackathon/login")
                     return null
                 }
                 return res.json()
@@ -118,7 +118,7 @@ export default function Profile() {
         formData.append("transaction_name", txName.trim())
         formData.append("amount", txAmount.trim())
         try {
-            const res = await fetch("/api/add_transaction", { method: "POST", body: formData })
+            const res = await fetch("/Hackathon/api/add_transaction", { method: "POST", body: formData })
             const result = await res.json()
             if (res.ok) {
                 setSuccess(result.message)
@@ -140,7 +140,7 @@ export default function Profile() {
         const formData = new FormData()
         formData.append("transaction_id", String(transactionId))
         try {
-            const res = await fetch("/api/delete_transaction", { method: "POST", body: formData })
+            const res = await fetch("/Hackathon/api/delete_transaction", { method: "POST", body: formData })
             const result = await res.json()
             if (res.ok) {
                 setSuccess(result.message)
@@ -163,7 +163,7 @@ export default function Profile() {
             formData.append(key, String(value))
         }
         try {
-            const res = await fetch("/api/update_finances", { method: "POST", body: formData })
+            const res = await fetch("/Hackathon/api/update_finances", { method: "POST", body: formData })
             const result = await res.json()
             if (res.ok) {
                 setSuccess(result.message)

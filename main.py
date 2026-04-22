@@ -478,7 +478,7 @@ def register():
 
 # Users dashboard page. If this is accessed without being logged in, 
 # it returns an unauthorized error.
-@app.route('/api/dashboard')
+@app.route('/Hackathon/api/dashboard')
 def dashboard():
     if 'username' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
@@ -507,7 +507,7 @@ def dashboard():
     }), 200
 
 # Logout endpoint. Removes the username from the session.
-@app.route('/api/logout')
+@app.route('/Hackathon/api/logout')
 def logout():
     session.pop('username', None)
     return jsonify({'message': 'Logged out successfully'}), 200
@@ -515,7 +515,7 @@ def logout():
 # Option to add a transaction. If the user is not logged in, it redirects to the login page.
 # flash messages are used to display success or error messages to the user after attempting 
 # to add a transaction.
-@app.route('/api/add_transaction', methods=['POST'])
+@app.route('/Hackathon/api/add_transaction', methods=['POST'])
 def route_add_transaction():
     if 'username' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
@@ -532,7 +532,7 @@ def route_add_transaction():
             return jsonify({'error': f'Error adding transaction: {e}'}), 400
 
 # Option to delete a transaction
-@app.route('/api/delete_transaction', methods=['POST'])
+@app.route('/Hackathon/api/delete_transaction', methods=['POST'])
 def route_delete_transaction():
     if 'username' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
@@ -549,7 +549,7 @@ def route_delete_transaction():
 
 
 # Update the users finances
-@app.route('/api/update_finances', methods=['POST'])
+@app.route('/Hackathon/api/update_finances', methods=['POST'])
 def route_update_finances():
     if 'username' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
@@ -575,7 +575,7 @@ def route_update_finances():
 # Update the users stocks records.
 # Only stock_symbol and count are required — name and price are looked up
 # automatically from the stocks.py CSV data.
-@app.route('/api/add_stock', methods=['POST'])
+@app.route('/Hackathon/api/add_stock', methods=['POST'])
 def route_add_stock():
     if 'username' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
@@ -605,7 +605,7 @@ def route_add_stock():
 
 
 # Look up a stock by symbol — returns name, beta, price-to-book, and current price.
-@app.route('/api/lookup_stock', methods=['GET'])
+@app.route('/Hackathon/api/lookup_stock', methods=['GET'])
 def route_lookup_stock():
     symbol = request.args.get('symbol', '').strip().upper()
     if not symbol:
@@ -618,7 +618,7 @@ def route_lookup_stock():
 
 # Refresh current prices for every stock in the logged-in user's portfolio
 # using the data from stocks.py / stocks.csv.
-@app.route('/api/update_stock_prices', methods=['POST'])
+@app.route('/Hackathon/api/update_stock_prices', methods=['POST'])
 def route_update_stock_prices():
     if 'username' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
@@ -659,4 +659,4 @@ def route_update_stock_prices():
 if __name__ == '__main__':
     initialize_database()
     generate_tests()
-    app.run(debug=False, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=5003)

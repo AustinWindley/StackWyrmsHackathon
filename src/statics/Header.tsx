@@ -16,7 +16,7 @@ export default function Header({ pageName = "Hatchling" }: HeaderProps) {
     const nav = useNavigate()
 
     useEffect(() => {
-        fetch("/api/dashboard")
+        fetch("/Hackathon/api/dashboard")
             .then(res => {
                 setIsLoggedIn(res.ok)
             })
@@ -61,7 +61,7 @@ export default function Header({ pageName = "Hatchling" }: HeaderProps) {
                     <Typography
                         variant="h6"
                         sx={{ ml: 1, cursor: "pointer" }}
-                        onClick={() => nav("/")}
+                        onClick={() => nav("/Hackathon/")}
                     >
                         Hatchling
                     </Typography>
@@ -81,10 +81,10 @@ export default function Header({ pageName = "Hatchling" }: HeaderProps) {
             <Paper elevation={5}>
                 <Box bgcolor="#f5f5f5" sx={{ zIndex: 1500, ml: -1 }} position="fixed" width="100vw" mt={7.2}>
                     <Tabs>
-                        <Tab label="Home" onClick={() => { setNavShown(false); nav("/") }} />
-                        <Tab label="Stocks" onClick={() => { setNavShown(false); nav("/stocks") }} />
-                        <Tab label="Graphs" onClick={() => { setNavShown(false); nav("/graphs") }} />
-                        {isLoggedIn && <Tab label="Profile" onClick={() => { setNavShown(false); nav("/profile") }} />}
+                        <Tab label="Home" onClick={() => { setNavShown(false); nav("/Hackathon/") }} />
+                        <Tab label="Stocks" onClick={() => { setNavShown(false); nav("/Hackathon/stocks") }} />
+                        <Tab label="Graphs" onClick={() => { setNavShown(false); nav("/Hackathon/graphs") }} />
+                        {isLoggedIn && <Tab label="Profile" onClick={() => { setNavShown(false); nav("/Hackathon/profile") }} />}
                     </Tabs>
                 </Box>
             </Paper>
@@ -96,9 +96,9 @@ export default function Header({ pageName = "Hatchling" }: HeaderProps) {
             <Paper elevation={5}>
                 <Box bgcolor="#f5f5f5" sx={{ zIndex: 1500, ml: -1, pl: 1 }} position="fixed" width="100vw" mt={7.2}>
                     <Tabs>
-                        {!isLoggedIn && <Tab label="Login" onClick={() => { setProfileShown(false); nav("/login") }} />}
-                        {!isLoggedIn && <Tab label="Register" onClick={() => { setProfileShown(false); nav("/register") }} />}
-                        {isLoggedIn && <Tab label="Profile" onClick={() => { setProfileShown(false); nav("/profile") }} />}
+                        {!isLoggedIn && <Tab label="Login" onClick={() => { setProfileShown(false); nav("/Hackathon/login") }} />}
+                        {!isLoggedIn && <Tab label="Register" onClick={() => { setProfileShown(false); nav("/Hackathon/register") }} />}
+                        {isLoggedIn && <Tab label="Profile" onClick={() => { setProfileShown(false); nav("/Hackathon/profile") }} />}
                         {isLoggedIn && <Tab label="Logout" onClick={() => { setProfileShown(false); handleLogout() }} />}
                     </Tabs>
                 </Box>
