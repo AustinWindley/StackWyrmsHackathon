@@ -434,14 +434,14 @@ display information.
 ==========================================================
 """
 # Home page
-@app.route('/')
+@app.route('/Hackathon/')
 def index():
     if 'username' in session:
         return jsonify({'authenticated': True, 'redirect': '/api/dashboard'}), 200
     return jsonify({'authenticated': False, 'redirect': '/api/login'}), 200
 
 # Login page
-@app.route('/api/login', methods=['GET', 'POST'])
+@app.route('/Hackathon/api/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
@@ -460,7 +460,7 @@ def login():
     return jsonify({'message': 'Login endpoint ready'}), 200
 
 # Registration page
-@app.route('/api/register', methods=['GET', 'POST'])
+@app.route('/Hackathon/api/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
