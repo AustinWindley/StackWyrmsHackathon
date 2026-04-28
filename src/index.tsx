@@ -3,7 +3,7 @@ import App from "./App"
 import { createRoot } from "react-dom/client"
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration"
 
-createRoot(document.getElementById("root")!).render(
+createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
     <App />
   </StrictMode>
