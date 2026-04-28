@@ -9,8 +9,8 @@ export default function App() {
   const router = createBrowserRouter([{
     path: '/Hackathon/',
     children: [
-      {index: true, element: <Navigate to={""} />},
-      {path: "", element: <Home />},
+      {index: true, element: <Navigate to={"home"} />},
+      {path: "home", element: <Home />},
       {path: "stocks", element: <Stocks />},
       {path: "graphs", element: <Graphs />},
       {path: "login", element: <Login />},

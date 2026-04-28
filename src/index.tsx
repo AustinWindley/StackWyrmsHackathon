@@ -9,6 +9,6 @@ createRoot(document.getElementById("root") as HTMLElement).render(
   </StrictMode>
 )
 
-// Register the service worker for offline support in production builds.
-// Change to serviceWorkerRegistration.unregister() to disable.
-serviceWorkerRegistration.register()
+// // Register the service worker for offline support in production builds.
+// // Change to serviceWorkerRegistration.unregister() to disable.
+// serviceWorkerRegistration.register()
