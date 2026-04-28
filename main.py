@@ -437,8 +437,8 @@ display information.
 @app.route('/Hackathon/')
 def index():
     if 'username' in session:
-        return jsonify({'authenticated': True, 'redirect': '/api/dashboard'}), 200
-    return jsonify({'authenticated': False, 'redirect': '/api/login'}), 200
+        return jsonify({'authenticated': True, 'redirect': '/Hackathon/api/dashboard'}), 200
+    return jsonify({'authenticated': False, 'redirect': '/Hackathon/api/login'}), 200
 
 # Login page
 @app.route('/Hackathon/api/login', methods=['GET', 'POST'])
